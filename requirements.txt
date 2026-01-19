@@ -1,22 +1,22 @@
 # Web framework
-Flask==3.0.0
-Werkzeug>=3.0.0
+Flask
+Werkzeug
 
 # Environment variables
-python-dotenv==1.0.1
+python-dotenv
 
 # Google Cloud SDKs
-google-cloud-storage==2.16.0
-google-cloud-bigquery==3.25.0
+google-cloud-storage
+google-cloud-bigquery
 
 # Vertex AI / Gemini
-google-cloud-aiplatform==1.64.0
+google-cloud-aiplatform
 
 # Audio processing
-pydub==0.25.1
+pydub
 
 # Data validation
-pydantic==2.7.4
+pydantic
 
 # Utility
-uuid==1.30
+uuid
