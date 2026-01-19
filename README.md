@@ -97,7 +97,7 @@ The Power BI dashboard is built on **live BigQuery connections** and provides re
 - Qualitative agent feedback table generated using GenAI
 - Interactive slicers (Agent, Year)
 
-assets/powerbi_dashboard.png
+assets/powerbi_dashboard.jpg
 ---
 
 ## 🗄️ Data Model
