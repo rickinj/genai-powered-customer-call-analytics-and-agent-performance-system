@@ -1,10 +1,6 @@
 > [!NOTE]
 > This project is an extension of the project [GenAI Audio Analysis (Google Cloud + Gemini + NLP + SQL)](https://github.com/rickinj/genai-audio-analysis). Do view the original project for SQL -> NLP rule based analysis.
 
-# My Project Title
-
-Description of the project goes here...
-
 # 🎧 GenAI-Powered Customer Call Analytics & Agent Performance System
 
 This project is an **end-to-end GenAI-powered call analytics system** that ingests customer support call recordings, analyzes them using **Google Gemini**, and provides **actionable insights** on both **customer issues** and **support agent performance**. 
