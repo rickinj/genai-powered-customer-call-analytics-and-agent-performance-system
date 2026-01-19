@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Customer Call Analyzer</title>
+  <style>
+    body {
+      font-family: "Inter", Arial, sans-serif;
+      background: linear-gradient(135deg, #f3f4f7, #dfe6f1);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 50px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.4s ease-in-out;
+    }
+
+    h2 {
+      text-align: center;
+      color: #1976d2;
+      margin-bottom: 20px;
+    }
+
+    .field {
+      margin-top: 18px;
+    }
+
+    label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #1976d2;
+      outline: none;
+      box-shadow: 0 0 4px rgba(25, 118, 210, 0.3);
+    }
+
+    textarea {
+      resize: none;
+      overflow: hidden;
+      min-height: 60px;
+    }
+
+    .btn {
+      margin-top: 20px;
+      padding: 12px 22px;
+      border: none;
+      background: #1976d2;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+      width: 100%;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: #1259a6;
+    }
+
+    .btn:disabled {
+      background: #9fbbe6;
+      cursor: not-allowed;
+    }
+
+    #status {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .output-section {
+      margin-top: 25px;
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+      animation: fadeInUp 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🎧 Customer Call Analyzer</h2>
+
+    <form id="uploadForm">
+
+      <!-- ✅ NEW: Agent Name Input -->
+      <div class="field">
+        <label for="agent_name">Agent Name (optional)</label>
+        <input type="text" id="agent_name" name="agent_name" placeholder="e.g. Rohit Sharma">
+      </div>
+
+      <div class="field">
+        <label for="audio">Select Audio File</label>
+        <input type="file" id="audio" name="audio" accept="audio/*" required>
+      </div>
+
+      <button class="btn" type="submit" id="uploadBtn">Upload & Analyze</button>
+    </form>
+
+    <div id="status"></div>
+
+    <div id="results" class="output-section" style="display:none;">
+
+      <!-- CUSTOMER INFO -->
+      <div class="field">
+        <label>Phone Number</label>
+        <input type="text" id="phone_number" readonly>
+      </div>
+
+      <div class="field">
+        <label>Complaint Type</label>
+        <input type="text" id="complaint_type" readonly>
+      </div>
+
+      <div class="field">
+        <label>Problem Solved</label>
+        <input type="text" id="problem_solved" readonly>
+      </div>
+
+      <div class="field">
+        <label>Sentiment</label>
+        <textarea id="sentiment" readonly></textarea>
+      </div>
+
+      <div class="field">
+        <label>Transcript</label>
+        <textarea id="transcript" readonly></textarea>
+      </div>
+
+      <!-- ✅ NEW: AGENT FEEDBACK SECTION -->
+      <div class="field">
+        <label>Agent Tone</label>
+        <input type="text" id="agent_tone" readonly>
+      </div>
+
+      <div class="field">
+        <label>Empathy Score</label>
+        <input type="text" id="empathy_score" readonly>
+      </div>
+
+      <div class="field">
+        <label>Improvement Suggestions</label>
+        <textarea id="improvement_suggestions" readonly></textarea>
+      </div>
+
+      <div class="field">
+        <label>Overall Agent Feedback</label>
+        <textarea id="agent_feedback" readonly></textarea>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const statusDiv = document.getElementById('status');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const resultsDiv = document.getElementById('results');
+
+    const sentimentBox = document.getElementById('sentiment');
+    const transcriptBox = document.getElementById('transcript');
+    const improvementBox = document.getElementById('improvement_suggestions');
+    const feedbackBox = document.getElementById('agent_feedback');
+
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const file = document.getElementById('audio').files[0];
+      if (!file) {
+        alert('Please choose an audio file.');
+        return;
+      }
+
+      const fd = new FormData();
+      fd.append('audio', file);
+
+      // ✅ Send agent_name (backend may ignore or use later)
+      fd.append('agent_name', document.getElementById('agent_name').value);
+
+      statusDiv.innerHTML = "⏳ Processing... please wait.";
+      uploadBtn.disabled = true;
+      resultsDiv.style.display = "none";
+
+      try {
+        const res = await fetch('/upload', { method: 'POST', body: fd });
+        const data = await res.json();
+
+        if (!res.ok || data.status !== "ok") {
+          statusDiv.innerHTML = `<span style="color:red;">❌ Error: ${data.message || "Unknown error"}</span>`;
+          return;
+        }
+
+        const result = data.data.result || {};
+        statusDiv.innerHTML = `<span style="color:green;">✅ Analysis Complete!</span>`;
+        resultsDiv.style.display = "block";
+
+        document.getElementById('phone_number').value = result.phone_number || "";
+        document.getElementById('complaint_type').value = result.problem_type || "";
+        document.getElementById('problem_solved').value = result.problem_solved || "";
+
+        sentimentBox.value = result.sentiment || "";
+        transcriptBox.value = result.full_transcript || "";
+
+        document.getElementById('agent_tone').value = result.agent_tone || "";
+        document.getElementById('empathy_score').value = result.empathy_score || "";
+        improvementBox.value = result.improvement_suggestions || "";
+        feedbackBox.value = result.overall_agent_feedback || "";
+
+        autoResize(sentimentBox);
+        autoResize(transcriptBox);
+        autoResize(improvementBox);
+        autoResize(feedbackBox);
+
+      } catch (err) {
+        statusDiv.innerHTML = `<span style="color:red;">⚠️ Error: ${err.message}</span>`;
+      } finally {
+        uploadBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
