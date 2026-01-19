@@ -189,6 +189,11 @@ GOOGLE_APPLICATION_CREDENTIALS=path/to/service-account.json
 
 ---
 
+> [!NOTE]
+> ⚠️ FFmpeg must be installed on the system for audio duration calculation (used by pydub).
+
+---
+
 ## ▶️ Running the Project Locally
 
 ```bash
