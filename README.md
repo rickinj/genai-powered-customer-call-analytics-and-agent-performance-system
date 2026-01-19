@@ -139,7 +139,6 @@ assets/powerbi_dashboard.png
 
 ### Frontend
 - HTML, CSS, Vanilla JavaScript  
-- Markdown rendering using `marked.js`
 
 ### Backend
 - Python  
